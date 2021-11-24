@@ -5,7 +5,9 @@ import { useTheme } from "@mui/material/styles";
 import { Typography, AppBar, Tabs, Tab, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import FromCreateVihicle from "../FormCreateVihicle/index";
+import FromCreateVihicle from "../Vihicles/FormCreateVihicle";
+
+import { getVehicles } from "../../core/api/services";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -43,6 +45,18 @@ function a11yProps(index) {
 export default function FullWidthTabs() {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+
+  React.useEffect(() => {
+    fetchData();
+    // return () => {
+    //   cleanup
+    // };
+  }, []);
+
+  const fetchData = async () => {
+    let res = await getVehicles();
+    console.log(res);
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

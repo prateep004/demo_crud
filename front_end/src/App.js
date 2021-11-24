@@ -2,8 +2,8 @@ import "./App.css";
 import * as React from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Grid } from "@mui/material";
-import FullWidthTabs from "./components/TabBar/index";
-import Item from "./components/Item/index";
+import FullWidthTabs from "./components/TabBar";
+import Item from "./components/Item";
 
 const theme = createTheme({
   palette: {
