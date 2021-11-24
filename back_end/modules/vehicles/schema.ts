@@ -7,6 +7,7 @@ export const itemVehiclesSchema = {
     id: { type: "number" },
     vehicle_nm: { type: "string" },
     vehicle_num: { type: "string" },
+    vehicle_brand: { type: "string" },
     vehicle_engine_size: { type: "number" },
     vehicle_engine_num: { type: "string" },
     created_at: { type: "string", format: "date" },
@@ -54,15 +55,26 @@ export const createVehicleSchema = {
     summary: "vehicles",
     description: "create vehicles",
     tags: ["vehicles"],
-    querystring: {
-        type: 'object',
+    body: {
+        type: "object",
         properties: {
             vehicle_nm: { type: "string" },
+            vehicle_brand: { type: "string" },
             vehicle_num: { type: "string" },
             vehicle_engine_size: { type: "number" },
             vehicle_engine_num: { type: "string" },
         }
-    }, response: {
+    },
+    // querystring: {
+    //     type: 'object',
+    //     properties: {
+    //         vehicle_nm: { type: "string" },
+    //         vehicle_num: { type: "string" },
+    //         vehicle_engine_size: { type: "number" },
+    //         vehicle_engine_num: { type: "string" },
+    //     }
+    // },
+    response: {
         200: {
             type: "object",
             properties: networkSuccessfullySchema
@@ -82,15 +94,26 @@ export const updateVehicleSchema = {
             }
         }
     },
-    querystring: {
-        type: 'object',
+    body: {
+        type: "object",
         properties: {
             vehicle_nm: { type: "string" },
             vehicle_num: { type: "string" },
+            vehicle_brand: { type: "string" },
             vehicle_engine_size: { type: "number" },
-            vehicle_engine_num: { type: "string" }
+            vehicle_engine_num: { type: "string" },
         }
-    }, response: {
+    },
+    // querystring: {
+    //     type: 'object',
+    //     properties: {
+    //         vehicle_nm: { type: "string" },
+    //         vehicle_num: { type: "string" },
+    //         vehicle_engine_size: { type: "number" },
+    //         vehicle_engine_num: { type: "string" }
+    //     }
+    // },
+    response: {
         200: {
             type: "object",
             properties: networkSuccessfullySchema

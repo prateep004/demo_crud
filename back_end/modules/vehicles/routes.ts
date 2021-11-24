@@ -42,17 +42,18 @@ export default async (server, options, next) => {
   },
     async (req, res) => {
       req.log.info(`create vehicles from db`);
-      console.log(req?.query);
-
+      console.log(req?.body?.data);
+      let data = req?.body?.data;
       await getConnection()
         .createQueryBuilder()
         .insert()
         .into(Vehicles)
         .values({
-          vehicle_nm: req?.query?.vehicle_nm,
-          vehicle_num: req?.query?.vehicle_num,
-          vehicle_engine_size: req?.query?.vehicle_engine_size,
-          vehicle_engine_num: req?.query?.vehicle_engine_num
+          vehicle_nm: data?.vehicle_nm,
+          vehicle_num: data?.vehicle_num,
+          vehicle_brand: data?.vehicle_brand,
+          vehicle_engine_size: data?.vehicle_engine_size,
+          vehicle_engine_num: data?.vehicle_engine_num
         })
         .execute();
 
@@ -65,16 +66,18 @@ export default async (server, options, next) => {
   },
     async (req, res) => {
       req.log.info(`update vehicles from db`);
-      console.log(req?.query,req?.params);
+      console.log(req?.body?.data);
+      let data = req?.body?.data;
 
       await getConnection()
         .createQueryBuilder()
         .update(Vehicles)
         .set({
-          vehicle_nm: req?.query?.vehicle_nm,
-          vehicle_num: req?.query?.vehicle_num,
-          vehicle_engine_size: req?.query?.vehicle_engine_size,
-          vehicle_engine_num: req?.query?.vehicle_engine_num
+          vehicle_nm: data?.vehicle_nm,
+          vehicle_num: data?.vehicle_num,
+          vehicle_brand: data?.vehicle_brand,
+          vehicle_engine_size: data?.vehicle_engine_size,
+          vehicle_engine_num: data?.vehicle_engine_num
         })
         .where("id = :id", { id: req?.params?.id })
         .execute();

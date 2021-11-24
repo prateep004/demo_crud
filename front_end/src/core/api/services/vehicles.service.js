@@ -9,7 +9,7 @@ export const getVehicles = async (params) => {
 };
 
 export const createVihicle = async (data) => {
-  return await mainAxios.instance.post("/vehicles", { data: data });
+  return await mainAxios.instance.post("/vehicles", { data });
 };
 
 export const updateVehicle = async (id, data) => {

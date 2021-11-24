@@ -1,10 +1,12 @@
 import * as React from "react";
 import { Box, Grid, TextField, Button } from "@mui/material";
+import { createVihicle } from "../../../core/api/services";
 
 export default function FromCreateVihicle() {
   const [state, setState] = React.useState({
     vehicle_nm: "",
     vehicle_num: "",
+    vehicle_brand: "",
     vehicle_engine_size: "",
     vehicle_engine_num: "",
   });
@@ -17,8 +19,8 @@ export default function FromCreateVihicle() {
     });
   }
 
-  function createVihicle() {
-      console.log(state);
+  function create() {
+    createVihicle(state);
   }
 
   return (
@@ -31,7 +33,7 @@ export default function FromCreateVihicle() {
       autoComplete="off"
     >
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <TextField
             required
             id="vehicle_nm"
@@ -42,7 +44,7 @@ export default function FromCreateVihicle() {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <TextField
             required
             id="vehicle_num"
@@ -50,6 +52,17 @@ export default function FromCreateVihicle() {
             label="หมายเลขทะเบียน"
             placeholder="กรอกหมายเลขทะเบียน"
             value={state.vehicle_num}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            required
+            id="vehicle_brand"
+            name="vehicle_brand"
+            label="ยื่อห้อรถ"
+            placeholder="กรอกหมายยื่อห้อรถ"
+            value={state.vehicle_brand}
             onChange={handleChange}
           />
         </Grid>
@@ -77,7 +90,7 @@ export default function FromCreateVihicle() {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={createVihicle} variant="contained">
+          <Button onClick={create} variant="contained">
             Create Vehicle
           </Button>
         </Grid>

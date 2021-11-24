@@ -13,6 +13,9 @@ export class Vehicles {
     vehicle_num: string
 
     @Column()
+    vehicle_brand: string
+    
+    @Column()
     vehicle_engine_size: number
 
     @Column()
