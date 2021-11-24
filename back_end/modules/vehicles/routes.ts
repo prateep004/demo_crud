@@ -14,7 +14,7 @@ export default async (server, options, next) => {
 
       const pagingResult = await paginationWrapBuild<Vehicles>(req, server.db.vehicles,
         {},
-        { id: "ASC" }
+        { id: "DESC" }
       )
 
       res.send(pagingResult);
