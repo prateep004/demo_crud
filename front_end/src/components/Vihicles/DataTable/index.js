@@ -23,6 +23,7 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
+import FormUpdateVihcle from "../FormUpdateVihcle";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -101,6 +102,7 @@ export default function DataTable() {
     total_number_of_entities: 0,
     total_number_of_pages: 1,
   });
+  const [model, setModel] = React.useState({ open: false, vehicle_id: null });
 
   React.useEffect(() => {
     fetchData({ page: 1, size: 10 });
@@ -111,14 +113,17 @@ export default function DataTable() {
 
   const fetchData = async (params) => {
     let res = await getVehicles(params);
-    if(res.data.page_information.page > 1 && res.data.entities.length === 0){
-      fetchData(fetchData({ page: pageInformation.page , size: pageInformation.size,}));
+    if (res.data.page_information.page > 1 && res.data.entities.length === 0) {
+      fetchData(
+        fetchData({ page: pageInformation.page, size: pageInformation.size })
+      );
     }
     setEntities(res.data.entities);
     setPageInformation({
       page: res.data.page_information.page - 1,
       size: res.data.page_information.size,
-      total_number_of_entities: res.data.page_information.total_number_of_entities,
+      total_number_of_entities:
+        res.data.page_information.total_number_of_entities,
       total_number_of_pages: res.data.page_information.total_number_of_pages,
     });
   };
@@ -179,101 +184,130 @@ export default function DataTable() {
     });
   };
 
+  const modelCallback = (params) => {
+    setModel({ open: params.model, vehicle_id: params.vehicle_id });
+    fetchData({
+      page: pageInformation.page + 1,
+      size: pageInformation.size,
+    });
+  };
+
+  const editVehicle = (id) => {
+    setModel({ open: true, vehicle_id: id });
+    console.log(model);
+  };
+
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-        <TableHead>
-          <TableRow>
-            <TableCell key="vehicle_nm">ชื่อ</TableCell>
-            <TableCell key="vehicle_num" align="right">
-              หมายเลขทะเบียน
-            </TableCell>
-            <TableCell key="vehicle_brand" align="right">
-              ยื่อห้อรถ
-            </TableCell>
-            <TableCell key="vehicle_engine_size" align="right">
-              ขนาดเครื่องยนต์
-            </TableCell>
-            <TableCell key="vehicle_engine_num" align="right">
-              หมายเลขเครื่องยนต์
-            </TableCell>
-            <TableCell
-              key="action"
-              align="right"
-              style={{ width: "250px", maxWidth: "250px", minWidth: "250px" }}
-            ></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {entities.map((row) => (
-            <TableRow key={row.vehicle_nm}>
-              <TableCell component="th" scope="row">
-                {row.vehicle_nm}
+    <div>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+          <TableHead>
+            <TableRow>
+              <TableCell key="vehicle_nm">ชื่อ</TableCell>
+              <TableCell key="vehicle_num" align="right">
+                หมายเลขทะเบียน
               </TableCell>
-              <TableCell align="right" style={{ minWidth: "15%" }}>
-                {row.vehicle_num}
+              <TableCell key="vehicle_brand" align="right">
+                ยื่อห้อรถ
               </TableCell>
-              <TableCell align="right" style={{ minWidth: "15%" }}>
-                {row.vehicle_brand}
+              <TableCell key="vehicle_engine_size" align="right">
+                ขนาดเครื่องยนต์
               </TableCell>
-              <TableCell align="right" style={{ minWidth: "15%" }}>
-                {row.vehicle_engine_size}
-              </TableCell>
-              <TableCell align="right" style={{ minWidth: "15%" }}>
-                {row.vehicle_engine_num}
+              <TableCell key="vehicle_engine_num" align="right">
+                หมายเลขเครื่องยนต์
               </TableCell>
               <TableCell
+                key="action"
                 align="right"
                 style={{ width: "250px", maxWidth: "250px", minWidth: "250px" }}
-              >
-                <Button
-                  sx={{ m: 1 }}
-                  variant="contained"
-                  color="primary"
-                  startIcon={<EditIcon />}
-                >
-                  Edit
-                </Button>
-                <Button
-                  sx={{ m: 1 }}
-                  variant="contained"
-                  color="error"
-                  onClick={() => onDelete(row.id)}
-                  startIcon={<DeleteIcon />}
-                >
-                  Delete
-                </Button>
-              </TableCell>
+              ></TableCell>
             </TableRow>
-          ))}
+          </TableHead>
+          <TableBody>
+            {entities.map((row) => (
+              <TableRow key={row.vehicle_nm}>
+                <TableCell component="th" scope="row">
+                  {row.vehicle_nm}
+                </TableCell>
+                <TableCell align="right" style={{ minWidth: "15%" }}>
+                  {row.vehicle_num}
+                </TableCell>
+                <TableCell align="right" style={{ minWidth: "15%" }}>
+                  {row.vehicle_brand}
+                </TableCell>
+                <TableCell align="right" style={{ minWidth: "15%" }}>
+                  {row.vehicle_engine_size}
+                </TableCell>
+                <TableCell align="right" style={{ minWidth: "15%" }}>
+                  {row.vehicle_engine_num}
+                </TableCell>
+                <TableCell
+                  align="right"
+                  style={{
+                    width: "250px",
+                    maxWidth: "250px",
+                    minWidth: "250px",
+                  }}
+                >
+                  <Button
+                    sx={{ m: 1 }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => editVehicle(row.id)}
+                    startIcon={<EditIcon />}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    sx={{ m: 1 }}
+                    variant="contained"
+                    color="error"
+                    onClick={() => onDelete(row.id)}
+                    startIcon={<DeleteIcon />}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
 
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 53 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[10, 15, 20, 25]}
+                colSpan={7}
+                count={parseInt(pageInformation.total_number_of_entities)}
+                rowsPerPage={parseInt(pageInformation.size)}
+                page={parseInt(pageInformation.page)}
+                SelectProps={{
+                  inputProps: {
+                    "aria-label": "rows per page",
+                  },
+                  native: true,
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
             </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[10, 15, 20, 25]}
-              colSpan={7}
-              count={parseInt(pageInformation.total_number_of_entities)}
-              rowsPerPage={parseInt(pageInformation.size)}
-              page={parseInt(pageInformation.page)}
-              SelectProps={{
-                inputProps: {
-                  "aria-label": "rows per page",
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+          </TableFooter>
+        </Table>
+      </TableContainer>
+      {model.open ? (
+        <FormUpdateVihcle
+          open={model.open}
+          vihcle_id={model.vehicle_id}
+          parentCallback={modelCallback}
+        ></FormUpdateVihcle>
+      ) : (
+        ""
+      )}
+    </div>
   );
 }
