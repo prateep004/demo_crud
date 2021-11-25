@@ -1,9 +1,9 @@
 import * as React from "react";
+import Swal from "sweetalert2";
 import { Box, Grid, TextField, Button } from "@mui/material";
 import { createVihicle } from "../../../core/api/services";
 
 export default function FromCreateVihicle({ parentCallback }) {
-
   const [state, setState] = React.useState({
     vehicle_nm: "",
     vehicle_num: "",
@@ -23,10 +23,28 @@ export default function FromCreateVihicle({ parentCallback }) {
     validate({ [name]: value });
   };
 
-  const create = () => {
+  const create = async () => {
     if (formIsValid()) {
-      createVihicle(state);
-      parentCallback(1);
+      let res = await createVihicle(state);
+      console.log(res);
+      if (res.status === 200) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: res.data.message,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        parentCallback(1);
+      } else {
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: res.data.message,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
     }
   };
 
@@ -138,10 +156,7 @@ export default function FromCreateVihicle({ parentCallback }) {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button
-            onClick={create}
-            variant="contained"
-          >
+          <Button onClick={create} variant="contained">
             Create Vehicle
           </Button>
         </Grid>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import Swal from "sweetalert2";
 import { getVehicles, deleteVehicle } from "../../../core/api/services";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
@@ -13,7 +14,6 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  Stack,
   Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -95,11 +95,15 @@ TablePaginationActions.propTypes = {
 
 export default function DataTable() {
   const [entities, setEntities] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [pageInformation, setPageInformation] = React.useState({
+    page: 0,
+    size: 10,
+    total_number_of_entities: 0,
+    total_number_of_pages: 1,
+  });
 
   React.useEffect(() => {
-    fetchData({ page: page + 1, size: rowsPerPage });
+    fetchData({ page: 1, size: 10 });
     // return () => {
     //   cleanup
     // };
@@ -107,29 +111,72 @@ export default function DataTable() {
 
   const fetchData = async (params) => {
     let res = await getVehicles(params);
+    if(res.data.page_information.page > 1 && res.data.entities.length === 0){
+      fetchData(fetchData({ page: pageInformation.page , size: pageInformation.size,}));
+    }
     setEntities(res.data.entities);
-    setPage(res.data.page_information.page - 1);
-    setRowsPerPage(res.data.page_information.size);
+    setPageInformation({
+      page: res.data.page_information.page - 1,
+      size: res.data.page_information.size,
+      total_number_of_entities: res.data.page_information.total_number_of_entities,
+      total_number_of_pages: res.data.page_information.total_number_of_pages,
+    });
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - entities.length) : 0;
+    pageInformation.page > 0
+      ? Math.max(
+          0,
+          (1 + pageInformation.page) * pageInformation.size -
+            pageInformation.total_number_of_entities
+        )
+      : 0;
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-    fetchData({ page: newPage + 1, size: rowsPerPage });
+    setPageInformation({
+      ...pageInformation,
+      page: newPage,
+    });
+    fetchData({ page: newPage + 1, size: pageInformation.size });
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPageInformation({
+      ...pageInformation,
+      size: parseInt(event.target.value, 10),
+      page: 0,
+    });
     fetchData({ page: 1, size: parseInt(event.target.value, 10) });
   };
 
   const onDelete = async (id) => {
-    await deleteVehicle(id);
-    fetchData({ page: page + 1, size: rowsPerPage });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let res = await deleteVehicle(id);
+        fetchData({
+          page: pageInformation.page + 1,
+          size: pageInformation.size,
+        });
+        if (res.status === 200) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: res.data.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      }
+    });
   };
 
   return (
@@ -211,9 +258,9 @@ export default function DataTable() {
             <TablePagination
               rowsPerPageOptions={[10, 15, 20, 25]}
               colSpan={7}
-              count={entities.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
+              count={parseInt(pageInformation.total_number_of_entities)}
+              rowsPerPage={parseInt(pageInformation.size)}
+              page={parseInt(pageInformation.page)}
               SelectProps={{
                 inputProps: {
                   "aria-label": "rows per page",

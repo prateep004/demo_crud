@@ -84,7 +84,7 @@ export default function FullWidthTabs() {
           ></FromCreateVihicle>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          {value === 1 ? <DataTable></DataTable> : ""}
+          <DataTable></DataTable>
         </TabPanel>
       </SwipeableViews>
     </Box>
