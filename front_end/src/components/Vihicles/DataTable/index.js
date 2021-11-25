@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getVehicles } from "../../../core/api/services";
+import { getVehicles, deleteVehicle } from "../../../core/api/services";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import {
@@ -13,7 +13,11 @@ import {
   TablePagination,
   TableRow,
   Paper,
+  Stack,
+  Button,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
@@ -106,7 +110,6 @@ export default function DataTable() {
     setEntities(res.data.entities);
     setPage(res.data.page_information.page - 1);
     setRowsPerPage(res.data.page_information.size);
-    console.log(res);
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -124,14 +127,17 @@ export default function DataTable() {
     fetchData({ page: 1, size: parseInt(event.target.value, 10) });
   };
 
+  const onDelete = async (id) => {
+    await deleteVehicle(id);
+    fetchData({ page: page + 1, size: rowsPerPage });
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <TableCell key="vehicle_nm">
-              ชื่อ
-            </TableCell>
+            <TableCell key="vehicle_nm">ชื่อ</TableCell>
             <TableCell key="vehicle_num" align="right">
               หมายเลขทะเบียน
             </TableCell>
@@ -144,6 +150,11 @@ export default function DataTable() {
             <TableCell key="vehicle_engine_num" align="right">
               หมายเลขเครื่องยนต์
             </TableCell>
+            <TableCell
+              key="action"
+              align="right"
+              style={{ width: "250px", maxWidth: "250px", minWidth: "250px" }}
+            ></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -152,10 +163,40 @@ export default function DataTable() {
               <TableCell component="th" scope="row">
                 {row.vehicle_nm}
               </TableCell>
-              <TableCell align="right">{row.vehicle_num}</TableCell>
-              <TableCell align="right">{row.vehicle_brand}</TableCell>
-              <TableCell align="right">{row.vehicle_engine_size}</TableCell>
-              <TableCell align="right">{row.vehicle_engine_num}</TableCell>
+              <TableCell align="right" style={{ minWidth: "15%" }}>
+                {row.vehicle_num}
+              </TableCell>
+              <TableCell align="right" style={{ minWidth: "15%" }}>
+                {row.vehicle_brand}
+              </TableCell>
+              <TableCell align="right" style={{ minWidth: "15%" }}>
+                {row.vehicle_engine_size}
+              </TableCell>
+              <TableCell align="right" style={{ minWidth: "15%" }}>
+                {row.vehicle_engine_num}
+              </TableCell>
+              <TableCell
+                align="right"
+                style={{ width: "250px", maxWidth: "250px", minWidth: "250px" }}
+              >
+                <Button
+                  sx={{ m: 1 }}
+                  variant="contained"
+                  color="primary"
+                  startIcon={<EditIcon />}
+                >
+                  Edit
+                </Button>
+                <Button
+                  sx={{ m: 1 }}
+                  variant="contained"
+                  color="error"
+                  onClick={() => onDelete(row.id)}
+                  startIcon={<DeleteIcon />}
+                >
+                  Delete
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
 
@@ -169,7 +210,7 @@ export default function DataTable() {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[10, 15, 20, 25]}
-              colSpan={5}
+              colSpan={7}
               count={entities.length}
               rowsPerPage={rowsPerPage}
               page={page}
